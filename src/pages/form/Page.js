@@ -2,6 +2,8 @@ import { useRouter } from 'next/router';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import Head from 'next/head';
+import Image from 'next/image';
+
 
 // GraphQL query as a string
 const GET_POST_BY_TITLE = `
@@ -97,7 +99,7 @@ export default function PostPage() {
 
       {pageBy.featuredImage?.node?.sourceUrl && (
         <div style={{ marginBottom: '20px' }}>
-          <img
+          <Image
             src={pageBy.featuredImage.node.sourceUrl}
             alt={pageBy.title}
             style={{ maxWidth: '100%', borderRadius: '8px' }}
@@ -116,7 +118,7 @@ export default function PostPage() {
                 );
               case 'core/image':
                 return (
-                  <img
+                  <Image
                     key={index}
                     src={block.attrs.src}
                     alt={block.attrs.alt || ''}

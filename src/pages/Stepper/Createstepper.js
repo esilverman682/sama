@@ -1,12 +1,14 @@
 import { useState } from "react";
-import { useMultistepForm } from "./Multistepform";
+import useMultistepForm from "./Multistepform";
+// src/pages/Stepper/Createstepper.js
+
 import UserForm from "./UserForm";
 import Sidebar from "@/components/Sidebar";
 import NumberForm from "./Rating";
 import StartApplication from "./StartApplication";
-import axios from "axios"; 
-import "react-toastify/dist/ReactToastify.css"; // Make sure  have this import
-import { ToastContainer, toast } from "react-toastify";  // Correct import
+import axios from "axios";
+import "react-toastify/dist/ReactToastify.css"; // Ensure you have this import
+import { ToastContainer, toast } from "react-toastify"; // Correct import
 
 const INITIAL_DATA = {
   SurveyName: "",
@@ -33,9 +35,9 @@ function Createstep() {
     next,
     setStepIndex,
   } = useMultistepForm([
-    <StartApplication />, // Start application without next initially
-    <UserForm {...data} updateFields={updateFields} />, // UserForm with data and updateFields
-    <NumberForm {...data} updateFields={updateFields} />, // RatingForm with data and updateFields
+    <StartApplication key="startApplication" next={next} />, // Pass next for first step
+    <UserForm key="userForm" {...data} updateFields={updateFields} />, // Pass data and updateFields to UserForm
+    <NumberForm key="numberForm" {...data} updateFields={updateFields} />, // RatingForm
   ]);
 
   // Ensure that 'number' is always a valid integer (handle empty values)
@@ -44,9 +46,9 @@ function Createstep() {
   const variables = {
     surveyName: data.SurveyName,
     surveyDescription: data.Description,
-    number: parseInt(data.number,10),
+    number: number, // This is now an integer
   };
-  console.log(variables);
+
   // Define the mutation query with variables
   const SUBMIT_SURVEY_MUTATION = `
     mutation MyMutation($surveyName: String!, $surveyDescription: String!, $number: Int!) {
@@ -66,7 +68,7 @@ function Createstep() {
       }
     }
   `;
-  console.log(SUBMIT_SURVEY_MUTATION);
+
   // Handle form submission
   async function onSubmit(e) {
     e.preventDefault();
@@ -75,7 +77,7 @@ function Createstep() {
       try {
         // Make the GraphQL request using Axios
         const response = await axios.post(
-          process.env.NEXT_PUBLIC_STAGING_URL, // Replace with  GraphQL API endpoint
+          process.env.NEXT_PUBLIC_STAGING_URL, // Replace with your GraphQL API endpoint
           {
             query: SUBMIT_SURVEY_MUTATION,
             variables: variables,
@@ -86,30 +88,25 @@ function Createstep() {
             },
           }
         );
-        //console.log(query);
         console.log("Survey submitted successfully:", response.data.data.submitSurvey.surveyEntry);
         toast.success("Survey submitted successfully!", {
-          //position: toast.POSITION.TOP_RIGHT, 
           autoClose: 3000, // Duration in ms
         });
-       setData(INITIAL_DATA); // Reset the form data
-        //setStepIndex(0); 
+        setData(INITIAL_DATA); // Reset the form data
       } catch (err) {
         console.error("Error submitting survey:", err);
         toast.error("An error occurred while submitting the survey. Please try again.", {
-          //position: toast.POSITION.TOP_RIGHT, 
-          autoClose: 3000, 
+          autoClose: 3000,
         });
       }
     } else {
-      // Move to next step if not the last step
-      next();
+      next(); // Move to next step if not the last step
     }
   }
 
-  // Use useEffect to update the step only when `next` is initialized
-  const stepWithNext = currentStepIndex === 0 && next ? (
-    <StartApplication next={next} /> // Pass next to StartApplication only for the first step
+  // Render dynamic step based on current step index
+  const dynamicStep = currentStepIndex === 0 ? (
+    <StartApplication next={next} key="startApplication" />
   ) : (
     step // For subsequent steps, render the dynamic step
   );
@@ -137,12 +134,12 @@ function Createstep() {
       <form onSubmit={onSubmit}>
         <div style={{ position: "absolute", top: ".5rem", right: ".5rem" }}></div>
         <Sidebar />
-        
-        {/* ToastContainer is placed here */}
-        <ToastContainer /> 
-        
-        {stepWithNext} {/* Render dynamic step */}
-        
+
+        {/* ToastContainer for toast notifications */}
+        <ToastContainer />
+
+        {dynamicStep} {/* Render dynamic step */}
+
         <div
           style={{
             marginTop: "1rem",
@@ -156,11 +153,8 @@ function Createstep() {
               Back
             </button>
           )}
-          {!isFirstStep && (
-            <button type="submit">{isLastStep ? "Finish" : "Next"}</button>
-          )}
+          <button type="submit">{isLastStep ? "Finish" : "Next"}</button>
         </div>
-        
       </form>
     </div>
   );

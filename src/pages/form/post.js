@@ -2,6 +2,7 @@ import axios from 'axios';
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
+import Image from 'next/image';
 
 // GraphQL query to fetch the post by its slug
 const GET_POST_BY_TITLE = `
@@ -89,7 +90,7 @@ export default function PostPage() {
 
       {post.featuredImage?.node?.sourceUrl && (
         <div style={{ marginBottom: '20px' }}>
-          <img
+          <Image
             src={post.featuredImage.node.sourceUrl}
             alt={post.title}
             style={{ maxWidth: '100%', borderRadius: '8px' }}

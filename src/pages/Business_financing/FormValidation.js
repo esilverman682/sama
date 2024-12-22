@@ -42,3 +42,5 @@ export const FormValidation = ({ currentStepIndex, values }) => {
 
   return { errors, handleNext };
 };
+
+export default FormValidation; 
