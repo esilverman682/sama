@@ -1,34 +1,79 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
-export default function UserForm({ SurveyName, Description, updateFields }) {
+const UserForm = ({ SurveyName, Description, updateFields }) => {
+  const [formData, setFormData] = useState({ SurveyName, Description });
+  const [errors, setErrors] = useState({});
+
+  // Update the formData whenever the props change (e.g., going back to a previous step)
+  useEffect(() => {
+    setFormData({ SurveyName, Description });
+  }, [SurveyName, Description]);
+
+  // Validation logic
+  const validate = () => {
+    const errors = {};
+    if (!formData.SurveyName) errors.SurveyName = "Survey Name is required";
+    if (!formData.Description) errors.Description = "Description is required";
+    setErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => {
+      const updatedData = { ...prev, [name]: value };
+      updateFields(updatedData); // Update the parent component state
+      return updatedData;
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (validate()) {
+      // Proceed to next step or submit form data if validation passes
+      console.log("Form data is valid:", formData);
+    }
+  };
+
   return (
     <div style={styles.formContainer}>
       <h2>Survey Details</h2>
-      <div style={styles.inputGroup}>
-        <label style={styles.label}>Survey Name</label>
-        <input
-          autoFocus
-          required
-          type="text"
-          value={SurveyName}
-          onChange={(e) => updateFields({ SurveyName: e.target.value })}
-          style={styles.input}
-        />
-      </div>
+      <form onSubmit={handleSubmit}>
+        <div style={styles.inputGroup}>
+          <label style={styles.label}>Survey Name</label>
+          <input
+            required
+            type="text"
+            name="SurveyName"
+            value={formData.SurveyName}
+            onChange={handleChange}
+            style={styles.input}
+          />
+          {errors.SurveyName && <span style={styles.error}>{errors.SurveyName}</span>}
+        </div>
 
-      <div style={styles.inputGroup}>
-        <label style={styles.label}>Description</label>
-        <input
-          required
-          type="text"
-          value={Description}
-          onChange={(e) => updateFields({ Description: e.target.value })}
-          style={styles.input}
-        />
-      </div>
+        <div style={styles.inputGroup}>
+          <label style={styles.label}>Description</label>
+          <input
+            required
+            type="text"
+            name="Description"
+            value={formData.Description}
+            onChange={handleChange}
+            style={styles.input}
+          />
+          {errors.Description && <span style={styles.error}>{errors.Description}</span>}
+        </div>
+
+        <button type="submit" style={styles.submitButton}>
+          Next
+        </button>
+      </form>
     </div>
   );
-}
+};
+
+export default UserForm; // Make sure it's correctly exported
 
 // Inline styles for better layout and spacing
 const styles = {
@@ -58,4 +103,19 @@ const styles = {
     borderRadius: "4px", // Rounded corners for the input fields
     border: "1px solid #ccc", // Light border for the inputs
   },
+  error: {
+    color: "red", // Show error in red
+    fontSize: "0.9rem", // Slightly smaller font for errors
+    marginTop: "0.5rem", // Space above error message
+  },
+  submitButton: {
+    backgroundColor: "#4CAF50", // Green background for submit button
+    color: "white", // White text
+    padding: "0.8rem 1.5rem", // Padding around the text
+    border: "none",
+    borderRadius: "4px", // Rounded corners
+    cursor: "pointer", // Pointer cursor on hover
+    fontSize: "1rem",
+    marginTop: "1.5rem", // Space above the button
+  }
 };
