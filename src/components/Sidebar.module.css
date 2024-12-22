@@ -1,0 +1,60 @@
+/* Styles for the sidebar when fixed */
+.sidebarFixed {
+  width: 250px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: #7911e8;
+  overflow: auto;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  transition: 0.3s;
+}
+
+.sidebarFixed ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebarFixed ul li {
+  padding: 10px;
+  text-align: center;
+}
+
+.sidebarFixed ul li a {
+  text-decoration: none;
+  color: #faf7f8;
+  display: block;
+}
+
+.sidebarFixed ul li a:hover {
+  background-color: #ddd;
+}
+
+/* For the static sidebar on mobile */
+.sidebarStatic {
+  width: 100%;
+  position: static;
+  background-color: #f4f4f4;
+  box-shadow: none;
+}
+
+.sidebarStatic ul {
+  padding: 0;
+  list-style: none;
+}
+
+.sidebarStatic ul li {
+  padding: 10px;
+  text-align: center;
+}
+
+.sidebarStatic ul li a {
+  text-decoration: none;
+  color: #333;
+  display: block;
+}
+
+.sidebarStatic ul li a:hover {
+  background-color: #ddd;
+}
